@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/UByMoen.Api/UByMoen.Api.csproj" />
+    <Project Path="src/UByMoen.Core/UByMoen.Core.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,10 @@
+services:
+  u-by-moen-api:
+    build: .
+    ports:
+      - "5000:8080"
+    environment:
+      - MOEN__EMAIL=${MOEN_EMAIL}
+      - MOEN__PASSWORD=${MOEN_PASSWORD}
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped
