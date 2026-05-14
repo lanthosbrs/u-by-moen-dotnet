@@ -18,7 +18,10 @@ builder.Services.AddSingleton<IMoenPusherClient, MoenPusherClient>();
 
 // HTTP client for the Moen REST API
 builder.Services.AddHttpClient("moen", client =>
-    client.DefaultRequestHeaders.UserAgent.ParseAdd("UByMoen-DotNet/1.0"))
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("UByMoen-DotNet/10");
+    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+})
 .AddTypedClient<IMoenApiClient>((httpClient, sp) =>
 {
     var pusher = sp.GetRequiredService<IMoenPusherClient>();
