@@ -1,5 +1,3 @@
-using UByMoen.Core.Models;
-
 namespace UByMoen.Core.Client;
 
 public delegate Task PusherEventHandler(string channelName, string eventName, object? eventData);

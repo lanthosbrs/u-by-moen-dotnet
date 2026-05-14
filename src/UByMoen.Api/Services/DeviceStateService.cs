@@ -21,15 +21,6 @@ public class DeviceStateService
             _devices[device.SerialNumber] = device;
     }
 
-    public void UpdateDevice(string serialNumber, Action<ShowerDevice> update)
-    {
-        if (_devices.TryGetValue(serialNumber, out var device))
-        {
-            update(device);
-            _devices[serialNumber] = device;
-        }
-    }
-
     public void ApplyPusherUpdate(string serialNumber, PusherDeviceUpdate update)
     {
         if (!_devices.TryGetValue(serialNumber, out var device))
@@ -56,6 +47,6 @@ public class PusherDeviceUpdate
     public int? ActivePreset { get; set; }
     public bool? TimerEnabled { get; set; }
     public int? TimerRemaining { get; set; }
-    public List<UByMoen.Core.Models.Outlet>? Outlets { get; set; }
-    public List<UByMoen.Core.Models.Preset>? Presets { get; set; }
+    public List<Outlet>? Outlets { get; set; }
+    public List<Preset>? Presets { get; set; }
 }

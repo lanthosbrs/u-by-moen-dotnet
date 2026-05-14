@@ -31,6 +31,7 @@ A .NET 10 ASP.NET Core Web API that wraps the [U by Moen](https://www.moen.com/u
 |---|---|
 | `UByMoen.Core` | Models, constants, exceptions, `IMoenApiClient`, `IMoenPusherClient`, and their implementations |
 | `UByMoen.Api` | ASP.NET Core host — REST endpoints, background WebSocket service, DI wiring |
+| `UByMoen.Tests` | xUnit v3 unit tests for models, response mapping, state cache, and controller logic |
 
 ---
 
@@ -61,11 +62,18 @@ dotnet user-secrets set "Moen:Email" "you@example.com"
 dotnet user-secrets set "Moen:Password" "your-password"
 ```
 
-For Docker / production, use environment variables:
-```bash
-MOEN__EMAIL=you@example.com
-MOEN__PASSWORD=your-password
-```
+For Docker / production, pass credentials as environment variables. The format depends on how you run:
+
+- **`docker compose`** — set single-underscore names in your shell or a `.env` file; `docker-compose.yml` maps them into the container:
+  ```
+  MOEN_EMAIL=you@example.com
+  MOEN_PASSWORD=your-password
+  ```
+- **`docker run`** — pass double-underscore names directly to the container (ASP.NET Core's env-var config separator):
+  ```
+  MOEN__EMAIL=you@example.com
+  MOEN__PASSWORD=your-password
+  ```
 
 ### Run
 
@@ -74,20 +82,22 @@ cd src/UByMoen.Api
 dotnet run
 ```
 
-The API listens on `http://localhost:5000` by default.
+The API listens on `http://localhost:5278` by default (Docker maps this to port `5000` via `docker-compose.yml`). The app will exit immediately on startup if `Moen:Email` or `Moen:Password` are not configured.
 
 ---
 
 ## API Reference
 
-All endpoints return / accept JSON. Successful commands return `204 No Content`.
+`GET` endpoints return `200` with JSON. `POST` commands return `204 No Content` on success, or `404 Not Found` if the serial is unknown.
 
 ### Devices
+
+Use the `serialNumber` from `GET /api/devices` as the `{serial}` path parameter.
 
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/api/devices` | List all devices with current state |
-| `GET` | `/api/devices/{serial}` | Get a single device |
+| `GET` | `/api/devices/{serial}` | Get a single device (`404` if not in cache) |
 | `POST` | `/api/devices/{serial}/on` | Turn shower on (auto-resumes if paused-by-preset) |
 | `POST` | `/api/devices/{serial}/off` | Turn shower off |
 | `POST` | `/api/devices/{serial}/resume` | Resume water after a preset paused it |
@@ -100,6 +110,8 @@ All endpoints return / accept JSON. Successful commands return `204 No Content`.
 ```json
 { "temperature": 104.0 }
 ```
+
+Temperature must be between `60.0` and the device's configured max (default `115.0`) °F, otherwise `400 Bad Request` is returned.
 
 ### Device state fields
 
@@ -194,10 +206,18 @@ State changes (temperature, mode, outlets) pushed by the Moen app or physical co
 # Build
 dotnet build
 
+# Test
+dotnet test
+
 # Publish self-contained for Linux (e.g. for a Raspberry Pi / Docker)
 dotnet publish src/UByMoen.Api -c Release -r linux-x64 --self-contained
 
-# Run via Docker
+# Run via Docker Compose — create a .env file with your credentials, then:
+# MOEN_EMAIL=you@example.com
+# MOEN_PASSWORD=your-password
+docker compose up -d
+
+# Or run directly with docker (pass double-underscore vars straight to the container)
 docker build -t u-by-moen-api .
 docker run -e MOEN__EMAIL=you@example.com -e MOEN__PASSWORD=secret -p 5000:8080 u-by-moen-api
 ```

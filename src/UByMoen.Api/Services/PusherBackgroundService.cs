@@ -144,8 +144,7 @@ public class PusherBackgroundService : BackgroundService
             return;
         }
 
-        var node = eventData as JsonNode;
-        if (node is null) return;
+        if (eventData is not JsonNode node) return;
 
         var eventType = node["type"]?.GetValue<string>();
         if (eventType is not ("state_change" or "shower_report"))
@@ -169,7 +168,7 @@ public class PusherBackgroundService : BackgroundService
         {
             update.Outlets = outletsArray
                 .Where(o => o is not null)
-                .Select(o => new UByMoen.Core.Models.Outlet
+                .Select(o => new Outlet
                 {
                     Position = o!["position"]?.GetValue<int>() ?? 0,
                     Active = o["active"]?.GetValue<bool>() ?? false,
@@ -180,19 +179,11 @@ public class PusherBackgroundService : BackgroundService
 
         _state.ApplyPusherUpdate(serialNumber, update);
         _logger.LogInformation("Applied Pusher update for device {Serial}: mode={Mode}", serialNumber, update.Mode ?? "(unchanged)");
-
-        await Task.CompletedTask;
     }
 
-    private static double? TryGetDouble(JsonNode? node)
-    {
-        if (node is null) return null;
-        try { return node.GetValue<double>(); } catch { return null; }
-    }
+    private static double? TryGetDouble(JsonNode? node) =>
+        node is JsonValue v && v.TryGetValue(out double d) ? d : null;
 
-    private static int? TryGetInt(JsonNode? node)
-    {
-        if (node is null) return null;
-        try { return node.GetValue<int>(); } catch { return null; }
-    }
+    private static int? TryGetInt(JsonNode? node) =>
+        node is JsonValue v && v.TryGetValue(out int i) ? i : null;
 }

@@ -51,7 +51,7 @@ public class DevicesController : ControllerBase
         if (device.Mode == MoenConstants.ModePausedByPreset)
             await _api.ResumeShowerAsync(serial, device.ActivePreset, ct);
         else
-            await _api.SetShowerModeAsync(serial, "on", cancellationToken: ct);
+            await _api.SetShowerModeAsync(serial, "on", ct);
 
         return NoContent();
     }
@@ -63,7 +63,7 @@ public class DevicesController : ControllerBase
     public async Task<IActionResult> TurnOff(string serial, CancellationToken ct)
     {
         if (_state.GetDevice(serial) is null) return NotFound();
-        await _api.SetShowerModeAsync(serial, MoenConstants.ModeOff, cancellationToken: ct);
+        await _api.SetShowerModeAsync(serial, MoenConstants.ModeOff, ct);
         return NoContent();
     }
 

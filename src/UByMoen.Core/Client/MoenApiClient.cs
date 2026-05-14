@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -134,7 +133,7 @@ public class MoenApiClient : IMoenApiClient
         return data.TryGetProperty("auth", out var authProp) ? authProp.GetString() ?? string.Empty : string.Empty;
     }
 
-    public async Task SetShowerModeAsync(string serialNumber, string mode, string? preset = null, CancellationToken cancellationToken = default)
+    public async Task SetShowerModeAsync(string serialNumber, string mode, CancellationToken cancellationToken = default)
     {
         if (await GetDeviceWithChannelAsync(serialNumber, cancellationToken) is not { } r)
             return;
@@ -142,7 +141,7 @@ public class MoenApiClient : IMoenApiClient
 
         if (mode == "on")
             await SendControlEventAsync(channelId, MoenConstants.ActionShowerOn,
-                new { preset = preset ?? "0" }, cancellationToken);
+                new { preset = "0" }, cancellationToken);
         else
             await SendControlEventAsync(channelId, MoenConstants.ActionShowerOff,
                 new { }, cancellationToken);

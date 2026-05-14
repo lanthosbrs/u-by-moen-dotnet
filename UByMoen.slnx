@@ -3,4 +3,7 @@
     <Project Path="src/UByMoen.Api/UByMoen.Api.csproj" />
     <Project Path="src/UByMoen.Core/UByMoen.Core.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/UByMoen.Tests/UByMoen.Tests.csproj" />
+  </Folder>
 </Solution>

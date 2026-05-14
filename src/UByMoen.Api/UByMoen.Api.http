@@ -1,6 +1,26 @@
 @UByMoen.Api_HostAddress = http://localhost:5278
 
-GET {{UByMoen.Api_HostAddress}}/weatherforecast/
+GET {{UByMoen.Api_HostAddress}}/api/devices
 Accept: application/json
+
+###
+
+GET {{UByMoen.Api_HostAddress}}/api/devices/{{serial}}
+Accept: application/json
+
+###
+
+POST {{UByMoen.Api_HostAddress}}/api/devices/{{serial}}/on
+
+###
+
+POST {{UByMoen.Api_HostAddress}}/api/devices/{{serial}}/off
+
+###
+
+POST {{UByMoen.Api_HostAddress}}/api/devices/{{serial}}/temperature
+Content-Type: application/json
+
+{ "temperature": 100 }
 
 ###
