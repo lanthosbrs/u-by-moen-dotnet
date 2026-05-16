@@ -6,6 +6,7 @@ public interface IMoenPusherClient : IAsyncDisposable
 {
     bool IsConnected { get; }
     string? SocketId { get; }
+    Func<object, Task>? OnDisconnected { get; set; }
 
     Task<bool> ConnectAsync(string appKey, string cluster, CancellationToken cancellationToken = default);
     Task<bool> SubscribeAsync(string channelName, string auth, CancellationToken cancellationToken = default);

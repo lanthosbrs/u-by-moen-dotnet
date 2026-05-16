@@ -251,6 +251,7 @@ public class MoenApiClient : IMoenApiClient
 
         if (!_pusherClient.IsConnected)
         {
+         
             _logger.LogError("Pusher not connected, cannot send control event");
             return;
         }

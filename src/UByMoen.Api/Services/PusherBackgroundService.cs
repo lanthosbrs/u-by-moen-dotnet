@@ -37,6 +37,12 @@ public class PusherBackgroundService : BackgroundService
     {
         // Wire up the event handler before connecting
         _pusher.OnEvent += HandlePusherEventAsync;
+        _pusher.OnDisconnected = async _ =>
+        {
+            _logger.LogWarning("Pusher disconnected — reinitialising connection");
+            _channelToSerial.Clear();
+            await InitialiseAsync(stoppingToken);
+        };
 
         await InitialiseAsync(stoppingToken);
 

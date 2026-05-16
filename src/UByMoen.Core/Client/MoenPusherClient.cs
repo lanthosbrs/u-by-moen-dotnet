@@ -23,6 +23,8 @@ public class MoenPusherClient : IMoenPusherClient
     public bool IsConnected => _ws?.State == WebSocketState.Open;
     public string? SocketId { get; private set; }
 
+    public Func<object, Task>? OnDisconnected { get; set; }
+
     public event PusherEventHandler? OnEvent;
 
     public MoenPusherClient(ILogger<MoenPusherClient> logger)
@@ -155,6 +157,7 @@ public class MoenPusherClient : IMoenPusherClient
     {
         var buffer = new byte[8192];
 
+        bool unexpectedDisconnect = false;
         try
         {
             while (!cancellationToken.IsCancellationRequested && IsConnected)
@@ -169,6 +172,7 @@ public class MoenPusherClient : IMoenPusherClient
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
                         _logger.LogInformation("Pusher WebSocket closed by server");
+                        unexpectedDisconnect = true;
                         return;
                     }
 
@@ -186,6 +190,15 @@ public class MoenPusherClient : IMoenPusherClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in Pusher receive loop");
+            unexpectedDisconnect = true;
+        }
+        finally
+        {
+            if (unexpectedDisconnect && OnDisconnected is not null)
+            {
+                _logger.LogInformation("Pusher disconnected unexpectedly — invoking reconnect handler");
+                _ = Task.Run(() => OnDisconnected(this));
+            }
         }
     }
 
