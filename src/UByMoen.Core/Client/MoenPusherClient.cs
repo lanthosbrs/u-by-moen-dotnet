@@ -254,7 +254,7 @@ public class MoenPusherClient : IMoenPusherClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing Pusher message");
+            _logger.LogError(ex, "Error processing Pusher message: {raw}", raw);
         }
     }
 
