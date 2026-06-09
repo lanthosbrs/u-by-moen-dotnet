@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using UByMoen.Core;
 using UByMoen.Core.Client;
@@ -171,7 +172,7 @@ public class PusherBackgroundService : BackgroundService
 
         _logger.LogWarning("type we are looking at: {type}", data["timer_enabled"]?.GetType());
 
-        if (data["timer_enabled"]?.GetType() == typeof(int))
+        if (data["timer_enabled"]?.GetValueKind() == JsonValueKind.Number)
         {
             //parse
             update.TimerEnabled =  data["timer_enabled"]?.GetValue<int>() == 0 ? false : true;
