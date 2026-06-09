@@ -165,9 +165,21 @@ public class PusherBackgroundService : BackgroundService
             CurrentTemperature = TryGetDouble(data["current_temperature"]),
             TargetTemperature = TryGetDouble(data["target_temperature"]),
             ActivePreset = TryGetInt(data["active_preset"]),
-            TimerEnabled = data["timer_enabled"]?.GetValue<bool?>(),
+            
             TimerRemaining = TryGetInt(data["time_remaining"]),
         };
+
+        if (data["timer_enabled"]?.GetType() == typeof(int))
+        {
+            //parse
+            update.TimerEnabled =  data["timer_enabled"]?.GetValue<int>() == 0 ? false : true;
+        }
+        else
+        {
+            //otherwise bool
+            update.TimerEnabled = data["timer_enabled"]?.GetValue<bool>();
+        }
+
 
         // Deserialise outlets if present
         if (data["outlets"] is JsonArray outletsArray)
