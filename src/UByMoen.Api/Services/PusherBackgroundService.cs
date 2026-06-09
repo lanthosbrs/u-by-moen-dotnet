@@ -170,8 +170,6 @@ public class PusherBackgroundService : BackgroundService
             TimerRemaining = TryGetInt(data["time_remaining"]),
         };
 
-        _logger.LogWarning("type we are looking at: {type}", data["timer_enabled"]?.GetValueKind());
-
         if (data["timer_enabled"]?.GetValueKind() == JsonValueKind.Number)
         {
             //parse
